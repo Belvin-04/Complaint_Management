@@ -6,6 +6,7 @@ import {
   deleteDoc,
   getDocs,
   setDoc,
+
 } from "firebase/firestore";
 
 const usersCollectionRef = collection(db, "users");
@@ -23,4 +24,17 @@ export const userService = {
   updateUser: (id, newUser) => {
     return setDoc(doc(db, "users", id), newUser);
   },
+
+  signIn: (email, pass) => {
+    console.log(email + " " + pass)
+    return usersCollectionRef
+      .where("email", "==", email)
+      .where("password", "==", pass)
+      .get()
+      .then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+          console.log(doc.id, " => ", doc.data());
+        });
+      })
+  }
 };
