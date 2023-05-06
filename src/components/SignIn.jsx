@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import { Button, Form, InputGroup } from "react-bootstrap";
+import { useState } from "react";
+import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { userService } from "../services/users.services";
-import sha256 from 'crypto-js/sha256';
+import sha256 from "crypto-js/sha256";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
@@ -24,7 +24,11 @@ const SignUp = () => {
     };
     newUser.password = sha256(newUser.password).toString();
     var ret = await userService.signIn(newUser.email, newUser.password);
-    console.log(ret);
+    if (ret == "0") {
+      alert("Invalid Credentials");
+    } else {
+      sessionStorage.setItem("user", ret);
+    }
     navigate("/");
   };
 

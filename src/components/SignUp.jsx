@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { Button, Form, InputGroup } from "react-bootstrap";
+import { useState } from "react";
+import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { userService } from "../services/users.services";
-import sha256 from 'crypto-js/sha256';
+import sha256 from "crypto-js/sha256";
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
-    repassword: ""
+    repassword: "",
   });
 
   const handleSubmit = (e) => {
@@ -26,12 +26,12 @@ const SignUp = () => {
       password: formData.password,
     };
     if (newUser.password == formData.repassword) {
-      newUser.password = sha256(newUser.password).toString()
+      newUser.password = sha256(newUser.password).toString();
       var ret = await userService.addUser(newUser);
       console.log(ret);
       navigate("/");
     } else {
-      window.alert("Please, Enter Same password")
+      window.alert("Please, Enter Same password");
     }
   };
 
