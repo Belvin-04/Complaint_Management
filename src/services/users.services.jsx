@@ -8,6 +8,7 @@ import {
   setDoc,
   query,
   where,
+  getDoc,
 } from "firebase/firestore";
 
 const usersCollectionRef = collection(db, "users");
@@ -16,8 +17,16 @@ export const userService = {
   getAllUsers: () => {
     return getDocs(usersCollectionRef);
   },
-  addUser: (newUser) => {
-    return addDoc(usersCollectionRef, newUser);
+  addUser: async (newUser) => {
+    let q = await getDocs(
+      query(usersCollectionRef, where("email", "==", newUser.email))
+    );
+    let docs = q.docs;
+    if (docs.length > 0) {
+      return "0";
+    } else {
+      return addDoc(usersCollectionRef, newUser);
+    }
   },
   deleteUser: (id) => {
     return deleteDoc(doc(db, "users", id));
@@ -27,7 +36,6 @@ export const userService = {
   },
 
   signIn: async (email, pass) => {
-    console.log(email + " " + pass);
     let q = await getDocs(
       query(
         usersCollectionRef,
@@ -39,20 +47,11 @@ export const userService = {
     if (docs.length > 0) {
       let keyArr = docs[0]._key.path.segments;
       let key = keyArr[keyArr.length - 1];
-
-      return key;
+      let user = (await getDoc(doc(db, "users", key))).data();
+      let isAdmin = Object.prototype.hasOwnProperty.call(user, "type");
+      return [key, isAdmin];
     } else {
-      return "0";
+      return [0];
     }
-
-    // return usersCollectionRef
-    //   .where("email", "==", email)
-    //   .where("password", "==", pass)
-    //   .get()
-    //   .then((querySnapshot) => {
-    //     querySnapshot.forEach((doc) => {
-    //       console.log(doc.id, " => ", doc.data());
-    //     });
-    //   });
   },
 };

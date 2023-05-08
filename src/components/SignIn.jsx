@@ -3,8 +3,12 @@ import { Button, Form } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { userService } from "../services/users.services";
 import sha256 from "crypto-js/sha256";
+import { useDispatch } from "react-redux";
+import { setAdmin } from "./admin-slice";
 
 const SignUp = () => {
+  const dispatch = useDispatch();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -24,12 +28,15 @@ const SignUp = () => {
     };
     newUser.password = sha256(newUser.password).toString();
     var ret = await userService.signIn(newUser.email, newUser.password);
-    if (ret == "0") {
+    if (ret[0] == 0) {
       alert("Invalid Credentials");
     } else {
-      sessionStorage.setItem("user", ret);
+      sessionStorage.setItem("user", ret[0]);
+      sessionStorage.setItem("isAdmin", ret[1]);
+      dispatch(setAdmin(ret[1]));
+      navigate("/show");
+      window.location.reload();
     }
-    navigate("/");
   };
 
   const handleChange = (e) => {

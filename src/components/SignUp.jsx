@@ -28,8 +28,11 @@ const SignUp = () => {
     if (newUser.password == formData.repassword) {
       newUser.password = sha256(newUser.password).toString();
       var ret = await userService.addUser(newUser);
-      console.log(ret);
-      navigate("/");
+      if (ret == "0") {
+        alert("User already exists");
+      } else {
+        navigate("/");
+      }
     } else {
       window.alert("Please, Enter Same password");
     }
@@ -73,6 +76,7 @@ const SignUp = () => {
             value={formData.password}
             name="password"
             onChange={handleChange}
+            minLength={8}
             required
           ></Form.Control>
         </Form.Group>
@@ -84,6 +88,7 @@ const SignUp = () => {
             value={formData.repassword}
             name="repassword"
             onChange={handleChange}
+            minLength={8}
             required
           ></Form.Control>
         </Form.Group>
